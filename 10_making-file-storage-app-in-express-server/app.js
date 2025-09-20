@@ -7,7 +7,7 @@ const app = express();
 
 // Enabling CORS
 app.use(cors())
-app.use(express.json())
+app.use(express.json());
 
 // Serving File
 app.get("/:filename" , (req, res) => {
