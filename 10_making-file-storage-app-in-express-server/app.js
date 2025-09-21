@@ -3,14 +3,16 @@ import { readdir } from "fs/promises";
 import cors from 'cors';
 import { rm } from "fs/promises";
 import { rename } from "fs/promises";
+import { createWriteStream } from "fs";
 const app = express();
+import { stat } from "fs/promises";
 
 // Enabling CORS
 app.use(cors())
 app.use(express.json());
 
 // Serving File
-app.get("/:filename" , (req, res) => {
+app.get("/files/:filename" , (req, res) => {
   const {filename} = req.params;
   if(req.query.action === "download") {
     res.setHeader(
@@ -21,9 +23,18 @@ app.get("/:filename" , (req, res) => {
   res.sendFile(`${import.meta.dirname}/storage/${filename}`)
 });
  
+// uploads
+
+app.post("/files/:filename" , (req, res) => {
+    const writeStream = createWriteStream(`./storage/${req.params.filename}`);
+    req.pipe(writeStream);
+    req.on("end", () => {
+        res.json({message: "File uploaded successfully"})
+    });
+})
 
 // delete 
-app.delete("/:filename", async (req, res) => {
+app.delete("/files/:filename", async (req, res) => {
     const {filename} = req.params;
     const filepath = `./storage/${filename}`
     try{
@@ -37,7 +48,7 @@ app.delete("/:filename", async (req, res) => {
 
 //rename the file
 
-app.patch("/:filename", async (req, res) => {
+app.patch("/files/:filename", async (req, res) => {
     const {filename} = req.params;
     console.log(filename);
     console.log(req.body)
@@ -47,10 +58,21 @@ app.patch("/:filename", async (req, res) => {
 
 
 // Serving Dir Content
-app.get("/", async (req, res) => {
-  const filesList = await readdir("./storage");
+app.get("/directory/:dirname?", async (req, res) => {
+  const {dirname} = req.params
+  const fullDirPath = `./storage/${dirname ? dirname : ""}`
+  const filesList = await readdir(fullDirPath);
   console.log(filesList);
-  res.json(filesList);
+  const resData = [];
+  for (const item of filesList) {
+    const stats = await stat(`${fullDirPath}/${item}`);
+    resData.push({
+      name: item,
+      isDirectory: stats.isDirectory(),
+    })
+  }
+  console.log(resData)
+  res.json(resData);
 });
 const port = 4000;
 app.listen(port, () => {
