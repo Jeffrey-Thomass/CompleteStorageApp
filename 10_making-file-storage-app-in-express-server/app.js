@@ -26,8 +26,8 @@ app.get("/files/*" , (req, res) => {
  
 // uploads
 
-app.post("/files/:filename" , (req, res) => {
-    const writeStream = createWriteStream(`./storage/${req.params.filename}`);
+app.post("/files/*" , (req, res) => {
+    const writeStream = createWriteStream(`./storage/${req.params[0]}`);
     req.pipe(writeStream);
     req.on("end", () => {
         res.json({message: "File uploaded successfully"})
@@ -35,8 +35,8 @@ app.post("/files/:filename" , (req, res) => {
 })
 
 // delete 
-app.delete("/files/:filename", async (req, res) => {
-    const {filename} = req.params;
+app.delete("/files/*", async (req, res) => {
+    const {0 : filename} = req.params;
     const filepath = `./storage/${filename}`
     try{
         await rm(filepath);

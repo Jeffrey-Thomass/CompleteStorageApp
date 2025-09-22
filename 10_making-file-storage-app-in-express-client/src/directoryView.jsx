@@ -21,7 +21,7 @@ function DirectoryView() {
   async function uploadFile(e) {
     const file = e.target.files[0];
     const xhr = new XMLHttpRequest();
-    xhr.open("POST", `${BASE_URL}/files/${file.name}`, true);
+    xhr.open("POST", `${BASE_URL}/files/${dirPath}/${file.name}`, true);
     xhr.addEventListener("load", () => {
       console.log(xhr.response);
       getDirectoryItems();
@@ -34,7 +34,7 @@ function DirectoryView() {
   }
 
   async function handleDelete(filename) {
-    const response = await fetch(`${BASE_URL}/files/${filename}`, {
+    const response = await fetch(`${BASE_URL}/files/${dirPath}/${filename}`, {
       method: "DELETE",
     });
     const data = await response.text();
