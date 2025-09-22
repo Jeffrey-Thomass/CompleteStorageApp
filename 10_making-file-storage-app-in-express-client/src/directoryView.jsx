@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 function DirectoryView() {
   const BASE_URL = "http://127.0.0.1:4000";
@@ -16,7 +16,7 @@ function DirectoryView() {
   }
   useEffect(() => {
     getDirectoryItems();
-  }, []);
+  }, [dirPath]);
 
   async function uploadFile(e) {
     const file = e.target.files[0];
@@ -74,12 +74,12 @@ function DirectoryView() {
       <p>Progress: {progress}%</p>
       {directoryItems.map(({ name, isDirectory }, i) => (
         <div key={i}>
-          {name} {isDirectory && <a href={`./${name}`}>Open</a>}
+          {name} {isDirectory && <Link to={`./${name}`}>Open</Link>}
           {!isDirectory && (
-            <a href={`${BASE_URL}/files/${name}?action=open`}>Open</a>
+            <a href={`${BASE_URL}/files/${dirPath}/${name}?action=open`}>Open</a>
           )}{" "}
           {!isDirectory && (
-            <a href={`${BASE_URL}/files/${name}?action=download`}>Download</a>
+            <a href={`${BASE_URL}/files/${dirPath}/${name}?action=download`}>Download</a>
           )}
           <button onClick={() => renameFile(name)}>Rename</button>
           <button onClick={() => saveFilename(name)}>Save</button>

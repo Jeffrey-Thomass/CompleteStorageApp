@@ -12,15 +12,16 @@ app.use(cors())
 app.use(express.json());
 
 // Serving File
-app.get("/files/:filename" , (req, res) => {
-  const {filename} = req.params;
+app.get("/files/*" , (req, res) => {
+  const { 0 :filepath} = req.params;
+  console.log(filepath)
   if(req.query.action === "download") {
     res.setHeader(
       "Content-Disposition",
-      `attachment; filename="${filename}"`
+      `attachment"`
     );
   }
-  res.sendFile(`${import.meta.dirname}/storage/${filename}`)
+  res.sendFile(`${import.meta.dirname}/storage/${filepath}`)
 });
  
 // uploads
@@ -58,8 +59,8 @@ app.patch("/files/:filename", async (req, res) => {
 
 
 // Serving Dir Content
-app.get("/directory/:dirname?", async (req, res) => {
-  const {dirname} = req.params
+app.get("/directory/?*", async (req, res) => {
+  const {0 : dirname} = req.params
   const fullDirPath = `./storage/${dirname ? dirname : ""}`
   const filesList = await readdir(fullDirPath);
   console.log(filesList);
