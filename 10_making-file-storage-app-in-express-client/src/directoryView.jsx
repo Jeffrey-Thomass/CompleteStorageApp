@@ -49,9 +49,9 @@ function DirectoryView() {
 
   async function saveFilename(oldFilename) {
     setNewFilename(oldFilename);
-    const response = await fetch(`${BASE_URL}/files/${oldFilename}`, {
+    const response = await fetch(`${BASE_URL}/files/${dirPath}/${oldFilename}`, {
       method: "PATCH",
-      body: JSON.stringify({newFilename }),
+      body: JSON.stringify({newFilename : `${dirPath}/${newFilename}` }),
       headers :{
         "Content-Type": "application/json"
       }

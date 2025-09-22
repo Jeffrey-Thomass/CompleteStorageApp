@@ -49,11 +49,11 @@ app.delete("/files/:filename", async (req, res) => {
 
 //rename the file
 
-app.patch("/files/:filename", async (req, res) => {
-    const {filename} = req.params;
-    console.log(filename);
+app.patch("/files/*", async (req, res) => {
+    const { 0 : filepath} = req.params;
+
     console.log(req.body)
-    await rename(`./storage/${filename}`, `./storage/${req.body.newFilename}`)
+    await rename(`./storage/${filepath}`, `./storage/${req.body.newFilename}`)
     res.json({message: "File Renamed Successfully"})
 })
 
