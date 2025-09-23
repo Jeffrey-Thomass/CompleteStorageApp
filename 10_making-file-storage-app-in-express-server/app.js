@@ -1,5 +1,5 @@
 import express from "express";
-import { readdir } from "fs/promises";
+import { mkdir, readdir } from "fs/promises";
 import cors from 'cors';
 import { rm } from "fs/promises";
 import { rename } from "fs/promises";
@@ -23,6 +23,20 @@ app.get("/files/*" , (req, res) => {
   }
   res.sendFile(`${import.meta.dirname}/storage/${filepath}`)
 });
+
+
+// Directory creation
+
+app.post("/directory/*", async (req, res) => {
+    const { 0 : dirname} = req.params;
+    try{
+      await mkdir(`./storage/${dirname}`)
+    res.json({message: "Directory created successfully"})
+    }
+    catch(err){
+      res.status(404).json({message: err.message})
+    }
+})
  
 // uploads
 
