@@ -58,7 +58,7 @@ function DirectoryView() {
     });
     const data = await response.text();
     console.log(data);
-    setNewFilename("");
+    setNewFilename("")
     getDirectoryItems();
   }
 
