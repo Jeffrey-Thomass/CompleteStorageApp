@@ -6,6 +6,7 @@ import { rename } from "fs/promises";
 import { createWriteStream } from "fs";
 const app = express();
 import { stat } from "fs/promises";
+import path from "path";
 
 // Enabling CORS
 app.use(cors())
@@ -13,7 +14,7 @@ app.use(express.json());
 
 // Serving File
 app.get("/files/*" , (req, res) => {
-  const { 0 :filepath} = req.params;
+  const filepath = path.join("/" , req.params[0]) 
   console.log(filepath)
   if(req.query.action === "download") {
     res.setHeader(
@@ -21,7 +22,11 @@ app.get("/files/*" , (req, res) => {
       `attachment"`
     );
   }
-  res.sendFile(`${import.meta.dirname}/storage/${filepath}`)
+  res.sendFile(`${import.meta.dirname}/storage/${filepath}` , (err) => {
+    if(err){
+      res.status(404).json({message: err.message})
+    }
+  })
 });
 
 
@@ -41,7 +46,8 @@ app.post("/directory/*", async (req, res) => {
 // uploads
 
 app.post("/files/*" , (req, res) => {
-    const writeStream = createWriteStream(`./storage/${req.params[0]}`);
+    const filepath = path.join("/" , req.params[0]) 
+    const writeStream = createWriteStream(`./storage/${filepath}`);
     req.pipe(writeStream);
     req.on("end", () => {
         res.json({message: "File uploaded successfully"})
@@ -74,9 +80,12 @@ app.patch("/files/*", async (req, res) => {
 
 // Serving Dir Content
 app.get("/directory/?*", async (req, res) => {
-  const {0 : dirname} = req.params
+  // const {0 : dirname} = req.params
+  const dirname = path.join("/" , req.params[0]) 
+  console.log(dirname)
   const fullDirPath = `./storage/${dirname ? dirname : ""}`
-  const filesList = await readdir(fullDirPath);
+  try {
+    const filesList = await readdir(fullDirPath);
   console.log(filesList);
   const resData = [];
   for (const item of filesList) {
@@ -88,6 +97,10 @@ app.get("/directory/?*", async (req, res) => {
   }
   console.log(resData)
   res.json(resData);
+  }
+  catch(err){
+    res.status(404).json({message: err.message})
+  }
 });
 const port = 4000;
 app.listen(port, () => {
