@@ -22,7 +22,7 @@ router.get("/:id" , (req, res) => {
 
     if(req.query.action === "download") {
       res.setHeader(
-        "Content-Disposition",
+        "Content-Disposition"
         `attachment"`
       );
     }
