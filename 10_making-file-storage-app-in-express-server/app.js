@@ -9,7 +9,7 @@ const app = express();
 app.use(cors())
 app.use(express.json());
 app.use("/directory", directoryRoutes)
-app.use("/files", filesRoute);
+app.use("/file", filesRoute);
 // // Serving File
 // app.get("/files/*" , (req, res) => {
 //   const filepath = path.join("/" , req.params[0]) 

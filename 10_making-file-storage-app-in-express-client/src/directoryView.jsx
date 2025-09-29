@@ -93,10 +93,10 @@ function DirectoryView() {
         <div key={i}>
           {name} {isDirectory && <Link to={`./${name}`}>Open</Link>}
           {!isDirectory && (
-            <a href={`${BASE_URL}/files/${dirPath}/${name}?action=open`}>Open</a>
+            <a href={`${BASE_URL}/file/${dirPath}/${name}?action=open`}>Open</a>
           )}{" "}
           {!isDirectory && (
-            <a href={`${BASE_URL}/files/${dirPath}/${name}?action=download`}>Download</a>
+            <a href={`${BASE_URL}/file/${dirPath}/${name}?action=download`}>Download</a>
           )}
           <button onClick={() => renameFile(name)}>Rename</button>
           <button onClick={() => saveFilename(name)}>Save</button>
