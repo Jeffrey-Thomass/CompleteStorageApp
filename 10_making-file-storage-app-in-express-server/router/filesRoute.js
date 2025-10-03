@@ -3,7 +3,6 @@ import { rm } from "fs/promises";
 import { rename } from "fs/promises";
 import { createWriteStream } from "fs";
 import { writeFile } from "fs/promises";
-const app = express();
 import path from "path";
 import filesData from "../filesDB.json" with {type: "json"};
 
