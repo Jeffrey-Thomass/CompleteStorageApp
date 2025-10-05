@@ -4,6 +4,7 @@ import { rename } from "fs/promises";
 import { createWriteStream } from "fs";
 import { writeFile } from "fs/promises";
 import path from "path";
+import directoriesData from "../directoriesDB.json" with {type: "json"};
 import filesData from "../filesDB.json" with {type: "json"};
 
 
@@ -37,6 +38,8 @@ router.get("/:id" , (req, res) => {
 
 router.post("/:filename" , (req, res) => {
     const {filename} = req.params;
+    const parentDirId = req.body.parentdirid || directoriesData[0].id;
+
     const id = crypto.randomUUID();
     const extension = path.extname(filename);
     const fullFilename = `${id}${extension}`
@@ -47,8 +50,12 @@ router.post("/:filename" , (req, res) => {
           id,
           extension,
           name : filename,
+          parentDirId
         })
+        const parentDirData = directoriesData.find((dir) => dir.id === parentDirId)
+        parentDirData.files.push()
         await writeFile("./filesDB.json" , JSON.stringify(filesData))  // here ./ because it will take relative to app.js 
+        await writeFile("./directoriesDB.json" , JSON.stringify(directoriesData))
         res.json({message: "File uploaded successfully"})
     });
 })
@@ -61,6 +68,11 @@ router.delete("/:id", async (req, res) => {
     try{
         await rm(`./storage/${id}${fileData.extension}`);
         filesData.splice(fileIndex, 1);
+
+        const parentDirData = directoriesData.find((dir) => dir.id === fileData.parentDirId)
+        parentDirData.files = parentDirData.files.filter((file) => file.id !== id) 
+
+        await writeFile("./directoriesDB.json" , JSON.stringify(directoriesData)) 
         await writeFile("./filesDB.json" , JSON.stringify(filesData)) 
         res.json({message: "File deleted successfully"})
     }
