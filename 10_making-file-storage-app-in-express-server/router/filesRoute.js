@@ -54,11 +54,14 @@ router.post("/:filename" , (req, res) => {
 })
 
 // delete 
-router.delete("/*", async (req, res) => {
-    const {0 : filename} = req.params;
-    const filepath = `./storage/${filename}`
+router.delete("/:id", async (req, res) => {
+    const {id} = req.params;
+    const fileIndex = filesData.findIndex((file) => file.id === id);
+    const fileData = filesData[fileIndex];
     try{
-        await rm(filepath);
+        await rm(`./storage/${id}${fileData.extension}`);
+        filesData.splice(fileIndex, 1);
+        await writeFile("./filesDB.json" , JSON.stringify(filesData)) 
         res.json({message: "File deleted successfully"})
     }
     catch(err){
@@ -68,11 +71,15 @@ router.delete("/*", async (req, res) => {
 
 //rename the file
 
-router.patch("/*", async (req, res) => {
-    const { 0 : filepath} = req.params;
+router.patch("/:id", async (req, res) => {
+    const {id} = req.params;
 
-    console.log(req.body)
-    await rename(`./storage/${filepath}`, `./storage/${req.body.newFilename}`)
+    const fileData = filesData.find((file) => {
+      return file.id === id;
+    })
+    fileData.name = req.body.newFilename;
+    await writeFile("./filesDB.json" , JSON.stringify(filesData)) 
+    // await rename(`./storage/${filepath}`, `./storage/${req.body.newFilename}`)
     res.json({message: "File Renamed Successfully"})
 })
 

@@ -7,7 +7,7 @@ import path from "path";
 const router = express.Router();
 
 // Serving Dir Content
-router.get("/?*", async (req, res) => {
+router.get("/:id", async (req, res) => {
     // const {0 : dirname} = req.params
     const dirname = path.join("/" , req.params[0]) 
     console.log(dirname)
